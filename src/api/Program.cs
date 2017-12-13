@@ -16,14 +16,20 @@
     {
         public static void Main(string[] args)
         {
-            var config = GetConfiguration();
-            BuildWebHost(config).Run();
+            BuildWebHost(args).Run();
         }
 
-        public static IWebHost BuildWebHost(IConfiguration config) =>
-            WebHost.CreateDefaultBuilder()
+        public static IWebHost BuildWebHost(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+                .UseKestrel()
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseUrls(
+                    GetConfiguration()
+                    .GetSection(ApplicationOptions.HostingSection)
+                    .Get<ApplicationOptions>()
+                    .Url)
                 .UseStartup<Startup>()
-                .ConfigureServices(collection => collection.AddSingleton(config))
+                .ConfigureServices(collection => collection.AddSingleton(GetConfiguration()))
                 .Build();
             
         private static IConfiguration GetConfiguration() =>
