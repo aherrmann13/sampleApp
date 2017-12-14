@@ -1,0 +1,1 @@
+dotnet publish ./src/api -c Release -o ./bin/Docker -r linux-x64
